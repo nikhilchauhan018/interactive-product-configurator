@@ -9,16 +9,20 @@ export function ConfiguratorWorkspace() {
   // If mode is split, show both side-by-side; if 2d, show 2D editor; default shows 3D
   if (viewportMode === 'split') {
     return (
-      <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 min-h-[550px]">
-        <div className="h-full flex flex-col">
-          <span className="text-[11px] font-semibold text-[#625F58] mb-1">Live 3D Rendering</span>
-          <div className="flex-1 rounded-xl overflow-hidden border border-[#E5E1D8]">
+      <div className="grid min-h-[550px] w-full grid-cols-1 gap-4 p-4 xl:grid-cols-2">
+        <div className="flex h-full flex-col">
+          <span className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#625F58]">
+            Live 3D Rendering
+          </span>
+          <div className="flex-1 overflow-hidden rounded-[12px] border border-[#E5E1D8] bg-[#FBFAF7]">
             <Product3DPreview />
           </div>
         </div>
-        <div className="h-full flex flex-col">
-          <span className="text-[11px] font-semibold text-[#625F58] mb-1">Printable Surface Editor</span>
-          <div className="flex-1 overflow-y-auto">
+        <div className="flex h-full flex-col">
+          <span className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#625F58]">
+            Printable Surface Editor
+          </span>
+          <div className="flex-1 overflow-y-auto rounded-[12px] border border-[#E5E1D8] bg-white">
             <Editor2D />
           </div>
         </div>
@@ -28,16 +32,17 @@ export function ConfiguratorWorkspace() {
 
   if (viewportMode === '2d') {
     return (
-      <div className="w-full h-full p-4 min-h-[550px]">
-        <Editor2D />
+      <div className="min-h-[550px] w-full p-4">
+        <div className="h-full rounded-[12px] border border-[#E5E1D8] bg-white overflow-hidden">
+          <Editor2D />
+        </div>
       </div>
     );
   }
 
-  // Default: 3D Preview
   return (
-    <div className="w-full h-full p-4 min-h-[550px] flex flex-col">
-      <div className="flex-1 rounded-xl overflow-hidden border border-[#E5E1D8] shadow-xs">
+    <div className="flex min-h-[550px] h-full w-full flex-col p-4">
+      <div className="flex-1 overflow-hidden rounded-[12px] border border-[#E5E1D8] bg-[#FBFAF7] shadow-[0_6px_18px_rgba(23,23,23,0.04)]">
         <Product3DPreview />
       </div>
     </div>

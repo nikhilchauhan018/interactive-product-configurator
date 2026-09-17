@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
-import { ConfiguratorState, ConfiguratorTab, ViewportMode } from './storeTypes.js';
+import { CartSnapshot, ConfiguratorState, ConfiguratorTab, ViewportMode } from './storeTypes.js';
 import { createDefaultConfiguration } from '../products/canopy-10x10/defaults.js';
 import { SurfaceId, DEFAULT_SURFACE_ID } from '@shared/constants/surfaces.js';
 import { EditorElement, ProductConfiguration, SurfaceCustomization } from '@shared/types/configuration.js';
@@ -24,6 +24,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
   const [savedConfigurationId, setSavedConfigurationId] = useState<string | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [notification, setNotificationState] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [cart, setCartState] = useState<CartSnapshot | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const setNotification = useCallback((type: 'success' | 'error' | 'info', message: string) => {
     setNotificationState({ type, message });
@@ -33,6 +35,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const dismissNotification = useCallback(() => setNotificationState(null), []);
+  const setCart = useCallback((nextCart: CartSnapshot) => setCartState(nextCart), []);
+  const setCartOpen = useCallback((open: boolean) => setIsCartOpen(open), []);
 
   // Compute pricing quote via pricing service
   const refreshPricing = useCallback(async () => {
@@ -285,6 +289,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
       savedConfigurationId,
       lastSavedAt,
       notification,
+      cart,
+      isCartOpen,
       setSize,
       setIncludeFrame,
       setWalls,
@@ -305,6 +311,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
       resetConfiguration,
       dismissNotification,
       setNotification,
+      setCart,
+      setCartOpen,
     }),
     [
       configuration,
@@ -321,6 +329,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
       savedConfigurationId,
       lastSavedAt,
       notification,
+      cart,
+      isCartOpen,
       setSize,
       setIncludeFrame,
       setWalls,
@@ -341,6 +351,8 @@ export function ConfiguratorProvider({ children }: { children: ReactNode }) {
       resetConfiguration,
       dismissNotification,
       setNotification,
+      setCart,
+      setCartOpen,
     ]
   );
 

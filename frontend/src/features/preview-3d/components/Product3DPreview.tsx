@@ -22,7 +22,7 @@ export function Product3DPreview() {
   const controlsRef = useRef<OrbitControls | null>(null);
   const currentModelGroupRef = useRef<THREE.Group | null>(null);
   const wallsGroupRef = useRef<THREE.Group | null>(null);
-  const fabricMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const fabricMaterialsRef = useRef<Set<THREE.MeshStandardMaterial>>(new Set());
 
   // Initialize Three.js scene once
   useEffect(() => {
@@ -129,23 +129,28 @@ export function Product3DPreview() {
         model.position.set(...modelAsset.position);
 
         // Find fabric meshes and frame meshes
+        fabricMaterialsRef.current.clear();
         model.traverse((child: any) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
 
-            const matName = child.material?.name || '';
+            const sourceMaterials = Array.isArray(child.material) ? child.material : [child.material];
+            const matName = sourceMaterials.map((material: any) => material?.name || '').join(' ');
             const nodeName = child.name || '';
 
             // Handle canopy roof material
             if (matName.includes('fabric') || matName.includes('Fabric') || nodeName.includes('fabric')) {
-              // Create standard material clone that accepts our canvas textures
               const customFabricMat = new THREE.MeshStandardMaterial({
                 roughness: 0.85,
                 metalness: 0.05,
               });
-              child.material = customFabricMat;
-              fabricMaterialRef.current = customFabricMat;
+              const nextMaterials = sourceMaterials.map((material: any) => {
+                const sourceName = material?.name || '';
+                return sourceName.includes('fabric') || sourceName.includes('Fabric') ? customFabricMat : material;
+              });
+              child.material = Array.isArray(child.material) ? nextMaterials : customFabricMat;
+              fabricMaterialsRef.current.add(customFabricMat);
             }
 
             // Handle aluminum frame nodes
@@ -192,7 +197,7 @@ export function Product3DPreview() {
 
   // Synchronize Roof Texture from configuration state
   const updateFabricTexture = useCallback(() => {
-    if (!fabricMaterialRef.current) return;
+    if (fabricMaterialsRef.current.size === 0) return;
 
     // Use current active roof or valance surface, or fallback to roof_front
     const targetSurface =
@@ -204,9 +209,11 @@ export function Product3DPreview() {
     if (!targetSurface) return;
 
     const texture = createSurfaceCanvasTexture(targetSurface, 1024, 1024);
-    fabricMaterialRef.current.map = texture;
-    fabricMaterialRef.current.color = new THREE.Color(0xffffff); // rely on canvas texture colors
-    fabricMaterialRef.current.needsUpdate = true;
+    fabricMaterialsRef.current.forEach((material) => {
+      material.map = texture;
+      material.color = new THREE.Color(0xffffff); // rely on canvas texture colors
+      material.needsUpdate = true;
+    });
   }, [configuration.surfaces, currentSurfaceId]);
 
   useEffect(() => {

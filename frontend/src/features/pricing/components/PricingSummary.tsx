@@ -14,6 +14,7 @@ export function PricingSummary() {
     isSaving,
     lastSavedAt,
     setNotification,
+    setCart,
   } = useConfigurator();
 
   const [isAddingCart, setIsAddingCart] = useState(false);
@@ -32,12 +33,16 @@ export function PricingSummary() {
       // 2. Dispatch to Shopify Cart Service
       const res = await addConfigurationToShopifyCart({
         configurationId: configId,
+        productId: configuration.productId,
         quantity: 1,
         pricing,
         customerNotes: 'Production ready custom proof.',
       });
 
-      setCartSuccess(res.message);
+      if (res.cartId) {
+        setCart({ cartId: res.cartId, checkoutUrl: res.checkoutUrl, item: res.item });
+      }
+      setCartSuccess(res.message || 'Cart ready for checkout.');
       setNotification('success', 'Custom canopy kit added to Shopify cart!');
     } catch (err: any) {
       setNotification('error', err.message || 'Failed to add item to Shopify cart.');

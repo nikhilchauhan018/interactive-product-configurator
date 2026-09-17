@@ -27,6 +27,9 @@ export function createSurfaceCanvasTexture(
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.flipY = false;
+  texture.center.set(0.5, 0.5);
+  texture.rotation = -Math.PI / 2;
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   texture.needsUpdate = true;

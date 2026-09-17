@@ -88,11 +88,12 @@ export function renderSurfaceToCanvas(
       ctx.textBaseline = 'middle';
 
       // Measure bounding for selection box
-      const metrics = ctx.measureText(el.text);
+      const text = el.text || '';
+      const metrics = ctx.measureText(text);
       const textWidth = metrics.width;
       const textHeight = fontSize * 1.2;
 
-      ctx.fillText(el.text, 0, 0);
+      ctx.fillText(text, 0, 0);
 
       if (isSelected && showGuides) {
         ctx.strokeStyle = '#183C34'; // Deep forest
@@ -102,10 +103,10 @@ export function renderSurfaceToCanvas(
         ctx.strokeRect(-textWidth / 2 - pad, -textHeight / 2 - pad, textWidth + pad * 2, textHeight + pad * 2);
       }
     } else if (el.type === 'image') {
-      const img = getCachedImage(el.src, onImageLoaded);
+      const img = getCachedImage(String(el.src || ''), onImageLoaded);
       // Pre-cached or drawn if loaded
       const targetWidth = 140;
-      const aspect = el.aspectRatio || 1;
+      const aspect = Number(el.aspectRatio) || 1;
       const targetHeight = targetWidth / aspect;
 
       if (img.complete && img.naturalWidth > 0) {
@@ -117,7 +118,7 @@ export function renderSurfaceToCanvas(
         ctx.fillStyle = '#171717';
         ctx.font = '12px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(el.fileName || 'Logo', 0, 0);
+        ctx.fillText(String(el.fileName || 'Logo'), 0, 0);
       }
 
       if (isSelected && showGuides) {

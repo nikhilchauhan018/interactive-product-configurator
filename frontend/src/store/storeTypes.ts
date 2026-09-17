@@ -1,9 +1,16 @@
 import { ProductConfiguration, EditorElement, SurfaceCustomization } from '@shared/types/configuration.js';
 import { SurfaceId } from '@shared/constants/surfaces.js';
 import { PricingQuote } from '@shared/types/pricing.js';
+import { ShopifyCartItem } from '@shared/types/cart.js';
 
 export type ConfiguratorTab = 'setup' | 'design' | 'review';
 export type ViewportMode = '3d' | '2d' | 'split';
+
+export interface CartSnapshot {
+  cartId: string;
+  checkoutUrl?: string;
+  item?: ShopifyCartItem;
+}
 
 export interface ConfiguratorState {
   configuration: ProductConfiguration;
@@ -20,6 +27,8 @@ export interface ConfiguratorState {
   savedConfigurationId: string | null;
   lastSavedAt: string | null;
   notification: { type: 'success' | 'error' | 'info'; message: string } | null;
+  cart: CartSnapshot | null;
+  isCartOpen: boolean;
 
   // Actions
   setSize: (size: '10x10' | '8x8' | '6.5x6.5' | '5x5') => void;
@@ -42,4 +51,6 @@ export interface ConfiguratorState {
   resetConfiguration: () => void;
   dismissNotification: () => void;
   setNotification: (type: 'success' | 'error' | 'info', message: string) => void;
+  setCart: (cart: CartSnapshot) => void;
+  setCartOpen: (open: boolean) => void;
 }

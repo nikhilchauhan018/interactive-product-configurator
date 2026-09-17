@@ -10,12 +10,15 @@ export function Editor2D() {
   const { currentSurfaceId } = useConfigurator();
 
   return (
-    <div className="flex flex-col h-full bg-[#FBFAF7] rounded-xl border border-[#E5E1D8] p-4 space-y-4">
+    <div className="flex min-h-full flex-col bg-[#FBFAF7] p-4 space-y-4">
       {/* Surface Selector Navigation */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold text-[#171717]">Select Surface to Customize</span>
-          <span className="text-[11px] text-[#8A867E]">Active: {currentSurfaceId}</span>
+          <div>
+            <h2 className="text-[16px] font-semibold leading-[22px] text-[#171717]">Customize your branding</h2>
+            <p className="mt-0.5 text-[12px] leading-[16px] text-[#625F58]">Choose a printable surface, then add text, color, or a logo.</p>
+          </div>
+          <span className="text-[11px] font-medium text-[#8A867E]">Active: {currentSurfaceId.replace('_', ' ')}</span>
         </div>
         <SurfaceSelector />
       </div>
