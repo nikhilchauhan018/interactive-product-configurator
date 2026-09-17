@@ -10,8 +10,11 @@ export class ApiError extends Error {
   }
 }
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith('/') ? endpoint : `/api/${endpoint}`;
+  const path = endpoint.startsWith('/') ? endpoint : `/api/${endpoint}`;
+  const url = `${apiBaseUrl}${path}`;
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',

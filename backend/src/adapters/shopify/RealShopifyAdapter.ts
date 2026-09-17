@@ -1,17 +1,22 @@
 import { IShopifyAdapter } from './ShopifyAdapter.js';
 import { AddToCartRequest, AddToCartResponse } from '@shared/types/cart.js';
 import { mockShopifyAdapter } from './MockShopifyAdapter.js';
+import { ENV } from '../../config/environment.js';
 
 export class RealShopifyAdapter implements IShopifyAdapter {
   private storeDomain: string;
   private storefrontAccessToken: string;
 
   constructor(domain?: string, token?: string) {
-    this.storeDomain = domain || process.env.VITE_SHOPIFY_STORE_DOMAIN || '';
-    this.storefrontAccessToken = token || process.env.VITE_SHOPIFY_PUBLIC_TOKEN || '';
+    this.storeDomain = domain || ENV.SHOPIFY_STORE_DOMAIN;
+    this.storefrontAccessToken = token || ENV.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   }
 
   async addItemToCart(request: AddToCartRequest): Promise<AddToCartResponse> {
+    if (!request.pricing) {
+      throw new Error('A pricing quote is required to create a cart item.');
+    }
+    const pricing = request.pricing;
     // If live credentials are not set, gracefully fall back to mock with an explicit message
     if (!this.storeDomain || !this.storefrontAccessToken || this.storefrontAccessToken.startsWith('mock_')) {
       return mockShopifyAdapter.addItemToCart(request);
@@ -20,7 +25,7 @@ export class RealShopifyAdapter implements IShopifyAdapter {
     try {
       // In a real Shopify Storefront API deployment:
       // GraphQL mutation cartCreate or cartLinesAdd
-      const response = await fetch(`https://${this.storeDomain}/api/2024-01/graphql.json`, {
+      const response = await fetch(`https://${this.storeDomain}/api/${ENV.SHOPIFY_API_VERSION}/graphql.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,11 +50,11 @@ export class RealShopifyAdapter implements IShopifyAdapter {
             input: {
               lines: [
                 {
-                  quantity: request.quantity,
+                    quantity: request.quantity || 1,
                   merchandiseId: `gid://shopify/ProductVariant/canopy-10x10`,
                   attributes: [
                     { key: '_Configuration ID', value: request.configurationId },
-                    { key: 'Total Price', value: `$${request.pricing.total}` },
+                    { key: 'Total Price', value: `$${pricing.total}` },
                   ],
                 },
               ],
@@ -69,8 +74,8 @@ export class RealShopifyAdapter implements IShopifyAdapter {
             id: cart.id,
             variantId: 'canopy-10x10',
             title: "10' × 10' Custom Logo Canopy Tent",
-            quantity: request.quantity,
-            price: request.pricing.total,
+            quantity: request.quantity || 1,
+            price: pricing.total,
             properties: { '_Configuration ID': request.configurationId },
             configurationId: request.configurationId,
           },

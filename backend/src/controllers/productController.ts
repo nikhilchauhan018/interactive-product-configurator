@@ -3,7 +3,7 @@ import { getProductDefinition } from '../../../frontend/src/products/productRegi
 
 export function getProduct(req: Request, res: Response, next: NextFunction): void {
   try {
-    const { productId } = req.params;
+    const productId = String(req.params.productId);
     const def = getProductDefinition(productId);
     res.json({
       success: true,

@@ -1,9 +1,12 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'node:path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+
+  return {
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -13,8 +16,9 @@ export default defineConfig({
   publicDir: resolve(process.cwd(), 'public'),
   server: {
     port: 5173,
-    proxy: {
-      '/api': 'http://localhost:3000',
-    },
+    ...(env.VITE_DEV_API_PROXY_TARGET
+      ? { proxy: { '/api': env.VITE_DEV_API_PROXY_TARGET } }
+      : {}),
   },
+  };
 });

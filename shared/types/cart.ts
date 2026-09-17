@@ -1,3 +1,5 @@
+import { PricingQuote } from './pricing.js';
+
 export interface ShopifyCartItem {
   id?: string;
   variantId: string;
@@ -15,8 +17,10 @@ export interface AddToCartRequest {
   productId: string;
   variantId?: string;
   quantity?: number;
-  pricing?: unknown;
+  pricing?: PricingQuote;
   customerNotes?: string;
+  pdfDataUrl?: string;
+  thumbnailUrl?: string;
 }
 
 export interface AddToCartResponse {

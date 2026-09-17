@@ -8,10 +8,13 @@
     "start": "tsx server.ts"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^4.21.2",
     "jspdf": "^2.5.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.0",
     "tsx": "^4.19.2",

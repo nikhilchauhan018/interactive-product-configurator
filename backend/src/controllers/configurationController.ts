@@ -15,7 +15,7 @@ export async function createOrUpdateConfiguration(req: Request, res: Response, n
 
 export async function getConfigurationById(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const id = req.params.id;
+    const id = String(req.params.id);
     const config = await configurationService.getConfiguration(id);
     if (!config) {
       res.status(404).json({
